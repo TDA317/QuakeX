@@ -122,12 +122,12 @@ float V_CalcBob (void)
 	float	bob;
 	float	cycle;
 	
-	cycle = cl.time - (int)(cl.time/cl_bobcycle.value)*cl_bobcycle.value;
+	cycle = cl.time - (float)((int)(cl.time/cl_bobcycle.value))*cl_bobcycle.value;
 	cycle /= cl_bobcycle.value;
 	if (cycle < cl_bobup.value)
-		cycle = M_PI * cycle / cl_bobup.value;
+		cycle = (float)(M_PI * cycle / cl_bobup.value);
 	else
-		cycle = M_PI + M_PI*(cycle-cl_bobup.value)/(1.0 - cl_bobup.value);
+		cycle = (float)(M_PI + M_PI*(cycle-cl_bobup.value)/(1.0f - cl_bobup.value));
 
 // bob is proportional to velocity in the xy plane
 // (don't count Z, or jumping messes it up)
@@ -287,7 +287,7 @@ void BuildGammaTable (float g)
 	
 	for (i=0 ; i<256 ; i++)
 	{
-		inf = 255 * pow ( (i+0.5)/255.5 , g ) + 0.5;
+		inf = (int)(255.0f * powf( (i+0.5f)/255.5f , g ) + 0.5f);
 		if (inf < 0)
 			inf = 0;
 		if (inf > 255)
@@ -379,12 +379,12 @@ void V_ParseDamage (void)
 	AngleVectors (ent->angles, forward, right, up);
 
 	side = DotProduct (from, right);
-	v_dmg_roll = count*side*v_kickroll.value;
+	v_dmg_roll = (float)(count*side*v_kickroll.value);
 	
 	side = DotProduct (from, forward);
-	v_dmg_pitch = count*side*v_kickpitch.value;
+	v_dmg_pitch = (float)(count*side*v_kickpitch.value);
 
-	v_dmg_time = v_kicktime.value;
+	v_dmg_time = (float)v_kicktime.value;
 }
 
 
@@ -563,12 +563,12 @@ void V_UpdatePalette (void)
 	}
 	
 // drop the damage value
-	cl.cshifts[CSHIFT_DAMAGE].percent -= host_frametime*150;
+	cl.cshifts[CSHIFT_DAMAGE].percent -= (int)(host_frametime*150.0f);
 	if (cl.cshifts[CSHIFT_DAMAGE].percent <= 0)
 		cl.cshifts[CSHIFT_DAMAGE].percent = 0;
 
 // drop the bonus value
-	cl.cshifts[CSHIFT_BONUS].percent -= host_frametime*100;
+	cl.cshifts[CSHIFT_BONUS].percent -= (int)(host_frametime*100.0f);
 	if (cl.cshifts[CSHIFT_BONUS].percent <= 0)
 		cl.cshifts[CSHIFT_BONUS].percent = 0;
 
@@ -592,9 +592,9 @@ void V_UpdatePalette (void)
 	V_CalcBlend ();
 
 	a = v_blend[3];
-	r = 255*v_blend[0]*a;
-	g = 255*v_blend[1]*a;
-	b = 255*v_blend[2]*a;
+	r = (float)(255.0f*v_blend[0]*a);
+	g = (float)(255.0f*v_blend[1]*a);
+	b = (float)(255.0f*v_blend[2]*a);
 
 	a = 1-a;
 	for (i=0 ; i<256 ; i++)
@@ -673,12 +673,12 @@ void V_UpdatePalette (void)
 	}
 	
 // drop the damage value
-	cl.cshifts[CSHIFT_DAMAGE].percent -= host_frametime*150;
+	cl.cshifts[CSHIFT_DAMAGE].percent -= (int)(host_frametime*150.0f);
 	if (cl.cshifts[CSHIFT_DAMAGE].percent <= 0)
 		cl.cshifts[CSHIFT_DAMAGE].percent = 0;
 
 // drop the bonus value
-	cl.cshifts[CSHIFT_BONUS].percent -= host_frametime*100;
+	cl.cshifts[CSHIFT_BONUS].percent -= (int)(host_frametime*100.0f);
 	if (cl.cshifts[CSHIFT_BONUS].percent <= 0)
 		cl.cshifts[CSHIFT_BONUS].percent = 0;
 
@@ -744,17 +744,17 @@ void CalcGunAngle (void)
 	yaw = r_refdef.viewangles[YAW];
 	pitch = -r_refdef.viewangles[PITCH];
 
-	yaw = angledelta(yaw - r_refdef.viewangles[YAW]) * 0.4;
+	yaw = angledelta(yaw - r_refdef.viewangles[YAW]) * 0.4f;
 	if (yaw > 10)
 		yaw = 10;
 	if (yaw < -10)
 		yaw = -10;
-	pitch = angledelta(-pitch - r_refdef.viewangles[PITCH]) * 0.4;
+	pitch = angledelta(-pitch - r_refdef.viewangles[PITCH]) * 0.4f;
 	if (pitch > 10)
 		pitch = 10;
 	if (pitch < -10)
 		pitch = -10;
-	move = host_frametime*20;
+	move = host_frametime*20.0f;
 	if (yaw > oldyaw)
 	{
 		if (oldyaw + move < yaw)
@@ -783,9 +783,9 @@ void CalcGunAngle (void)
 	cl.viewent.angles[YAW] = r_refdef.viewangles[YAW] + yaw;
 	cl.viewent.angles[PITCH] = - (r_refdef.viewangles[PITCH] + pitch);
 
-	cl.viewent.angles[ROLL] -= v_idlescale.value * sin(cl.time*v_iroll_cycle.value) * v_iroll_level.value;
-	cl.viewent.angles[PITCH] -= v_idlescale.value * sin(cl.time*v_ipitch_cycle.value) * v_ipitch_level.value;
-	cl.viewent.angles[YAW] -= v_idlescale.value * sin(cl.time*v_iyaw_cycle.value) * v_iyaw_level.value;
+	cl.viewent.angles[ROLL] -= (float)(v_idlescale.value * sinf(cl.time*v_iroll_cycle.value) * v_iroll_level.value);
+	cl.viewent.angles[PITCH] -= (float)(v_idlescale.value * sinf(cl.time*v_ipitch_cycle.value) * v_ipitch_level.value);
+	cl.viewent.angles[YAW] -= (float)(v_idlescale.value * sinf(cl.time*v_iyaw_cycle.value) * v_iyaw_level.value);
 }
 
 /*
@@ -825,9 +825,9 @@ Idle swaying
 */
 void V_AddIdle (void)
 {
-	r_refdef.viewangles[ROLL] += v_idlescale.value * sin(cl.time*v_iroll_cycle.value) * v_iroll_level.value;
-	r_refdef.viewangles[PITCH] += v_idlescale.value * sin(cl.time*v_ipitch_cycle.value) * v_ipitch_level.value;
-	r_refdef.viewangles[YAW] += v_idlescale.value * sin(cl.time*v_iyaw_cycle.value) * v_iyaw_level.value;
+	r_refdef.viewangles[ROLL] += (float)(v_idlescale.value * sinf(cl.time*v_iroll_cycle.value) * v_iroll_level.value);
+	r_refdef.viewangles[PITCH] += (float)(v_idlescale.value * sinf(cl.time*v_ipitch_cycle.value) * v_ipitch_level.value);
+	r_refdef.viewangles[YAW] += (float)(v_idlescale.value * sinf(cl.time*v_iyaw_cycle.value) * v_iyaw_level.value);
 }
 
 
@@ -847,9 +847,9 @@ void V_CalcViewRoll (void)
 
 	if (v_dmg_time > 0)
 	{
-		r_refdef.viewangles[ROLL] += v_dmg_time/v_kicktime.value*v_dmg_roll;
-		r_refdef.viewangles[PITCH] += v_dmg_time/v_kicktime.value*v_dmg_pitch;
-		v_dmg_time -= host_frametime;
+		r_refdef.viewangles[ROLL] += (float)(v_dmg_time/v_kicktime.value*v_dmg_roll);
+		r_refdef.viewangles[PITCH] += (float)(v_dmg_time/v_kicktime.value*v_dmg_pitch);
+		v_dmg_time -= (float)host_frametime;
 	}
 
 	if (cl.stats[STAT_HEALTH] <= 0)
@@ -1012,7 +1012,7 @@ if (cl.onground && ent->origin[2] - oldz > 0)
 //FIXME		I_Error ("steptime < 0");
 		steptime = 0;
 
-	oldz += steptime * 80;
+	oldz += steptime * 80.0f;
 	if (oldz > ent->origin[2])
 		oldz = ent->origin[2];
 	if (ent->origin[2] - oldz > 12)
@@ -1073,7 +1073,7 @@ void V_RenderView (void)
 		int		i;
 
 		vid.rowbytes <<= 1;
-		vid.aspect *= 0.5;
+		vid.aspect *= 0.5f;
 
 		r_refdef.viewangles[YAW] -= lcd_yaw.value;
 		for (i=0 ; i<3 ; i++)
@@ -1094,7 +1094,7 @@ void V_RenderView (void)
 		r_refdef.vrect.height <<= 1;
 
 		vid.rowbytes >>= 1;
-		vid.aspect *= 2;
+		vid.aspect *= 2.0f;
 	}
 	else
 	{

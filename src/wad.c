@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 
-int			wad_numlumps;
+unsigned int			wad_numlumps;
 lumpinfo_t	*wad_lumps;
 byte		*wad_base;
 

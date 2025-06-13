@@ -224,7 +224,7 @@ areanode_t *SV_CreateAreaNode (int depth, vec3_t mins, vec3_t maxs)
 	else
 		anode->axis = 1;
 	
-	anode->dist = 0.5 * (maxs[anode->axis] + mins[anode->axis]);
+	anode->dist = 0.5f * (maxs[anode->axis] + mins[anode->axis]);
 	VectorCopy (mins, mins1);	
 	VectorCopy (mins, mins2);	
 	VectorCopy (maxs, maxs1);	
@@ -394,10 +394,10 @@ void SV_LinkEdict (edict_t *ent, qboolean touch_triggers)
 		max = 0;
 		for (i=0 ; i<3 ; i++)
 		{
-			v =fabs( ent->v.mins[i]);
+			v =fabsf( ent->v.mins[i]);
 			if (v > max)
 				max = v;
-			v =fabs( ent->v.maxs[i]);
+			v =fabsf( ent->v.maxs[i]);
 			if (v > max)
 				max = v;
 		}
@@ -637,11 +637,11 @@ qboolean SV_RecursiveHullCheck (hull_t *hull, int num, float p1f, float p2f, vec
 		return SV_RecursiveHullCheck (hull, node->children[1], p1f, p2f, p1, p2, trace);
 #endif
 
-// put the crosspoint DIST_EPSILON pixels on the near side
+// put the crosspoint (0.03125f) pixels on the near side
 	if (t1 < 0)
-		frac = (t1 + DIST_EPSILON)/(t1-t2);
+		frac = (t1 + (0.03125f))/(t1-t2);
 	else
-		frac = (t1 - DIST_EPSILON)/(t1-t2);
+		frac = (t1 - (0.03125f))/(t1-t2);
 	if (frac < 0)
 		frac = 0;
 	if (frac > 1)
@@ -691,7 +691,7 @@ qboolean SV_RecursiveHullCheck (hull_t *hull, int num, float p1f, float p2f, vec
 	while (SV_HullPointContents (hull, hull->firstclipnode, mid)
 	== CONTENTS_SOLID)
 	{ // shouldn't really happen, but does occasionally
-		frac -= 0.1;
+		frac -= 0.1f;
 		if (frac < 0)
 		{
 			trace->fraction = midf;

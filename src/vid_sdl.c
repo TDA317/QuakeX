@@ -66,8 +66,8 @@ void    VID_Init (unsigned char *palette)
     int pnum, chunk;
     byte *cache;
     int cachesize;
-    Uint8 video_bpp;
-    Uint16 video_w, video_h;
+//    Uint8 video_bpp;
+//    Uint16 video_w, video_h;
     Uint32 flags;
  
     // Load the SDL library
@@ -102,7 +102,7 @@ void    VID_Init (unsigned char *palette)
     // now know everything we need to know about the buffer
     VGA_width = vid.conwidth = vid.width;
     VGA_height = vid.conheight = vid.height;
-    vid.aspect = ((float)vid.height / (float)vid.width) * (320.0 / 240.0);
+    vid.aspect = ((float)vid.height / (float)vid.width) * (320.0f / 240.0f);
     vid.numpages = 1;
     vid.colormap = host_colormap;
     vid.fullbright = 256 - LittleLong (*((int *)vid.colormap + 2048));
@@ -316,8 +316,8 @@ void Sys_SendKeyEvents(void)
             case SDL_MOUSEMOTION:
                 if ( (event.motion.x != (vid.width/2)) ||
                      (event.motion.y != (vid.height/2)) ) {
-                    mouse_x = event.motion.xrel*10;
-                    mouse_y = event.motion.yrel*10;
+                    mouse_x = (float)event.motion.xrel*10.0f;
+                    mouse_y = (float)event.motion.yrel*10.0f;
                     if ( (event.motion.x < ((vid.width/2)-(vid.width/4))) ||
                          (event.motion.x > ((vid.width/2)+(vid.width/4))) ||
                          (event.motion.y < ((vid.height/2)-(vid.height/4))) ||
@@ -465,7 +465,7 @@ char *Sys_ConsoleInput (void)
 // =============================================
 void Joy_UpdateButtons()
 {
-	int				i, hat;
+	int				hat;
 	static int		joy_oldbuttons = 0;
 	static int		old_left = 0, old_right = 0, old_back = 0, old_hat = 0, old_button;
 
@@ -556,7 +556,7 @@ static void Joy_UpdateAxis(usercmd_t *cmd, char mode, float scale, int rawvalue)
 		return;
 
 	// Convert value from -128...128 to -1...1, multiply by scale
-	value = (rawvalue / 128.0);
+	value = ((float)rawvalue / 128.0f);
 	svalue = value * scale;
 
 	// Handle +speed
@@ -571,19 +571,19 @@ static void Joy_UpdateAxis(usercmd_t *cmd, char mode, float scale, int rawvalue)
 		// Turning
 		case AXIS_TURN:
 			if(fabs(value) > axis_yaw_dz.value)
-				cl.viewangles[YAW] -= svalue  * aspeed * cl_yawspeed.value;
+				cl.viewangles[YAW] -= (float)(svalue  * aspeed * cl_yawspeed.value);
 			break;
 		
 		// Walking
 		case AXIS_WALK:
 			if(fabs(value) > axis_walk_dz.value)
-				cmd->forwardmove -= svalue * speed * cl_forwardspeed.value;
+				cmd->forwardmove -= (float)(svalue * speed * cl_forwardspeed.value);
 			break;
 
 		// Strafing
 		case AXIS_STRAFE:
 			if(fabs(value) > axis_strafe_dz.value)
-				cmd->sidemove += svalue * speed * cl_sidespeed.value;
+				cmd->sidemove += (float)(svalue * speed * cl_sidespeed.value);
 			break;
 
 		// Looking
@@ -591,9 +591,9 @@ static void Joy_UpdateAxis(usercmd_t *cmd, char mode, float scale, int rawvalue)
 			if(fabs(value) > axis_pitch_dz.value)
 			{
 				if (invert_look.value > 0)
-					cl.viewangles[PITCH] -= svalue * aspeed * cl_pitchspeed.value;
+					cl.viewangles[PITCH] -= (float)(svalue * aspeed * cl_pitchspeed.value);
 				else
-					cl.viewangles[PITCH] += svalue * aspeed * cl_pitchspeed.value;
+					cl.viewangles[PITCH] += (float)(svalue * aspeed * cl_pitchspeed.value);
 				V_StopPitchDrift();
 			}
 			else if(lookspring.value == 0.0)

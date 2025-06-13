@@ -63,8 +63,8 @@ void SV_SetIdealPitch (void)
 		return;
 		
 	angleval = sv_player->v.angles[YAW] * M_PI*2 / 360;
-	sinval = sin(angleval);
-	cosval = cos(angleval);
+	sinval = sinf(angleval);
+	cosval = cosf(angleval);
 
 	for (i=0 ; i<MAX_FORWARD ; i++)
 	{
@@ -109,7 +109,7 @@ void SV_SetIdealPitch (void)
 	
 	if (steps < 2)
 		return;
-	sv_player->v.idealpitch = -dir * sv_idealpitchscale.value;
+	sv_player->v.idealpitch = (float)(-dir) * sv_idealpitchscale.value;
 }
 
 
@@ -152,7 +152,7 @@ void SV_UserFriction (void)
 	
 	if (newspeed < 0)
 		newspeed = 0;
-	newspeed /= speed;
+	newspeed = newspeed / speed;
 
 	vel[0] = vel[0] * newspeed;
 	vel[1] = vel[1] * newspeed;
@@ -201,7 +201,7 @@ void SV_Accelerate (void)
 		accelspeed = addspeed;
 	
 	for (i=0 ; i<3 ; i++)
-		velocity[i] += accelspeed*wishdir[i];	
+		velocity[i] += (float)(accelspeed*wishdir[i]);
 }
 
 void SV_AirAccelerate (vec3_t wishveloc)
@@ -232,7 +232,7 @@ void DropPunchAngle (void)
 	
 	len = VectorNormalize (sv_player->v.punchangle);
 	
-	len -= 10*host_frametime;
+	len -= 10.0f*host_frametime;
 	if (len < 0)
 		len = 0;
 	VectorScale (sv_player->v.punchangle, len, sv_player->v.punchangle);
@@ -259,7 +259,7 @@ void SV_WaterMove (void)
 		wishvel[i] = forward[i]*cmd.forwardmove + right[i]*cmd.sidemove;
 
 	if (!cmd.forwardmove && !cmd.sidemove && !cmd.upmove)
-		wishvel[2] -= 60;		// drift towards bottom
+		wishvel[2] -= 60.0f;		// drift towards bottom
 	else
 		wishvel[2] += cmd.upmove;
 
@@ -280,7 +280,7 @@ void SV_WaterMove (void)
 		newspeed = speed - host_frametime * speed * sv_friction.value;
 		if (newspeed < 0)
 			newspeed = 0;	
-		VectorScale (velocity, newspeed/speed, velocity);
+		VectorScale (velocity, (float)(newspeed/speed), velocity);
 	}
 	else
 		newspeed = 0;
@@ -404,10 +404,10 @@ void SV_ClientThink (void)
 	angles = sv_player->v.angles;
 	
 	VectorAdd (sv_player->v.v_angle, sv_player->v.punchangle, v_angle);
-	angles[ROLL] = V_CalcRoll (sv_player->v.angles, sv_player->v.velocity)*4;
+	angles[ROLL] = V_CalcRoll (sv_player->v.angles, sv_player->v.velocity)*4.0f;
 	if (!sv_player->v.fixangle)
 	{
-		angles[PITCH] = -v_angle[PITCH]/3;
+		angles[PITCH] = -v_angle[PITCH]/3.0f;
 		angles[YAW] = v_angle[YAW];
 	}
 
@@ -443,12 +443,12 @@ void SV_ReadClientMove (usercmd_t *move)
 	
 // read ping time
 	host_client->ping_times[host_client->num_pings%NUM_PING_TIMES]
-		= sv.time - MSG_ReadFloat ();
+		= (float)(sv.time - MSG_ReadFloat());
 	host_client->num_pings++;
 
 // read current angles	
 	for (i=0 ; i<3 ; i++)
-		angle[i] = MSG_ReadFloat (); // Manoel Kasimier
+		angle[i] = (float)MSG_ReadFloat(); // Manoel Kasimier
 //		angle[i] = MSG_ReadAngle ();
 
 	VectorCopy (angle, host_client->edict->v.v_angle);

@@ -15,11 +15,11 @@
 #include <ctype.h>
 #include <errno.h>
 #ifndef __WIN32__
-/*#include <sys/ipc.h>
+#include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
-#include <sys/mman.h>*/
+#include <sys/mman.h>
 #endif
 
 #include "quakedef.h"
@@ -380,11 +380,9 @@ void moncontrol(int x)
  
 int main (int c, char **v)
 {
-	DWORD ldt;
 	 
 	FILE *fp = NULL;
 
-	char szCmdLine[80];
 	char commandLine[1024];
 	double		time, oldtime, newtime;
 	quakeparms_t parms;
@@ -392,7 +390,8 @@ int main (int c, char **v)
 	extern int recording;
 	static int frame;
 
-	int		n, d = 0, slcl;
+	unsigned int n;
+	int		d = 0, slcl;
 
 
 	moncontrol(0);
@@ -466,7 +465,7 @@ int main (int c, char **v)
 
         if (++frame > 10)
             moncontrol(1);      // profile only while we do each Quake frame
-        Host_Frame (time);
+        Host_Frame ((float)time);
         moncontrol(0);
 
 // graphic debugging aids
